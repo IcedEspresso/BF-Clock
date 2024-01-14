@@ -1,1 +1,64 @@
-<h1>Hello World!</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BF Timer</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="scripts.js"></script>
+  </head>
+
+  <body>
+    <header>
+      <img
+        src="./img/Panda-Lounge-1-6-2024.png"
+        alt="PL One Piece Stylized Logo"
+        class="logo"
+      />
+    </header>
+
+    <div class="container text-align-center">
+      <h1>Blox Fruits Private Server Calculator</h1>
+      <span id="current-time"></span>
+      <span id="server-start-time"></span>
+    </div>
+
+    <div class="container">
+      <label for="userInput">Enter 24-hour time:</label>
+      <input type="text" id="userInput" placeholder="HH:mm" />
+      <button onclick="saveServerStart()">Calculate</button>
+      <span id="timer-output"></span>
+    </div>
+
+    <!-- Fruit Spawn Alert -->
+    <div class="container">
+      <h2>Fruit Spawn</h2>
+      <div id="fruit-spawn-output">
+        <div>
+          <h5>Next Fruit Spawn</h5>
+          <span id="fruit-spawn-time"></span>
+        </div>
+        <div>
+          <h5>Next Fruit Despawn</h5>
+          <span id="fruit-despawn-time"></span>
+        </div>
+        <div>
+          <h5>Time until next spawn</h5>
+          <span id="fruit-timer"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aura Seller -->
+    <div class="container">
+      <h2>Aura Seller Status</h2>
+      <div id="aura-seller-output"></div>
+    </div>
+
+    <!-- Core Event -->
+    <div class="container">
+      <h2>Core Event Statuss</h2>
+      <div id="core-event-output"></div>
+    </div>
+  </body>
+</html>

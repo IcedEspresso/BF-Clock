@@ -1,0 +1,23 @@
+body {
+  background-color: rgb(33, 33, 33);
+  color: #fff;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  max-width: 500px;
+  width: 100%;
+}
+
+#current-time {
+  font-size: 24px;
+  margin: 20px;
+}
+
+.text-align-center {
+  text-align: center;
+}
