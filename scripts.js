@@ -1,3 +1,6 @@
+document.getElementById("volumeControl").value =
+  localStorage.getItem("volume") || 0.5;
+
 let serverStart;
 let currentTime;
 
@@ -7,44 +10,67 @@ let nextAuraDespawnTime;
 let nextFruitSpawnTime;
 let nextFruitDespawnTime;
 
-let nextCoreSpawnTime;
-let nextCoreDespawnTime;
+let nextEventFruitSpawnTime;
+let nextEventFruitDespawnTime;
 
 /* Keeps track of the current local device time */
 function updateCurrentTime() {
-  const currentTimeElement = document.getElementById("current-time");
+  // const currentTimeElement = document.getElementById("current-time");
   currentTime = new Date(); // Reassign the current time
-  const options = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    timeZoneName: "short",
-  };
-  const formattedTime = currentTime.toLocaleString("en-US", options);
-  currentTimeElement.textContent = formattedTime;
+  // const options = {
+  //   weekday: "long",
+  //   year: "numeric",
+  //   month: "long",
+  //   day: "numeric",
+  //   hour: "numeric",
+  //   minute: "numeric",
+  //   second: "numeric",
+  //   timeZoneName: "short",
+  // };
+  // const formattedTime = currentTime.toLocaleString("en-US", options);
+  // currentTimeElement.textContent = formattedTime;
 }
 
-// Saves the user's input to the serverStart variable
-function saveServerStart() {
-  const userInputElement = document.getElementById("userInput");
-  const userInputValue = userInputElement.value;
+function syncInputs(value) {
+  let userInputs = document.getElementsByClassName("userInput");
 
-  // Validate the user input (you may need more robust validation)
-  if (!userInputValue || !userInputValue.match(/^\d{2}:\d{2}$/)) {
+  for (let i = 0; i < userInputs.length; i++) {
+    userInputs[i].value = value;
+  }
+
+  serverStart = value;
+}
+
+function saveServerStart() {
+  const mainInput = document.getElementById("mainInput");
+  const userInputValue = serverStart;
+
+  // Validate the user input
+  if (!userInputValue || !isValidTimeFormat(userInputValue)) {
     alert("Please enter a valid 24-hour time (HH:mm).");
     return;
   }
 
+  mainInput.style.display = "none";
+
   serverStart = userInputValue;
-  alert("Server start time saved: " + serverStart);
 
-  document.getElementById("server-start-time").textContent = serverStart;
+  document.getElementById("server-start-time").innerHTML =
+    "<h4>Server Start at " + serverStart + "</h4>";
 
+  closeSettings();
   calculateTime();
+}
+
+function isValidTimeFormat(time) {
+  const regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+  return regex.test(time);
+}
+
+function handleEnterKey(event) {
+  if (event.key === "Enter") {
+    saveServerStart();
+  }
 }
 
 function calculateTime() {
@@ -55,15 +81,20 @@ function calculateTime() {
   const serverStartTime = new Date();
   serverStartTime.setHours(hours, minutes, 0, 0);
 
+  // Reset the next spawn times to the new calculated values
+  nextAuraSpawnTime = new Date(serverStartTime.getTime() + 25 * 60 * 1000);
+  nextFruitSpawnTime = new Date(serverStartTime.getTime() + 60 * 60 * 1000);
+  nextEventFruitSpawnTime = new Date(
+    serverStartTime.getTime() + 90 * 60 * 1000
+  );
+
   // Pass the new Date object to necessary functions
   auraSeller(serverStartTime);
   fruitSpawn(serverStartTime);
-  coreEvent(serverStartTime);
+  eventFruit(serverStartTime);
 }
 
 function auraSeller(serverStartTime) {
-  const auraSellerOutput = document.getElementById("aura-seller-output");
-
   function calculateAuraTimes() {
     const auraSpawnInterval = 25 * 60 * 1000; // 25 Minutes
     const auraDespawnInterval = 20 * 60 * 1000; // 20 Minutes
@@ -79,36 +110,62 @@ function auraSeller(serverStartTime) {
       nextAuraDespawnTime = new Date(
         nextAuraSpawnTime.getTime() + auraDespawnInterval
       );
-    } else if (currentTime > nextAuraDespawnTime) {
+    }
+
+    // Check if spawned
+    if (currentTime > nextAuraSpawnTime) {
       console.log(
         currentTime +
-          " is passing " +
-          nextAuraDespawnTime +
+          " is passing spawn timer " +
+          nextAuraSpawnTime +
           ". Updating to next interval..."
       );
       nextAuraSpawnTime = new Date(
-        nextAuraDespawnTime.getTime() + auraSpawnInterval
+        nextAuraSpawnTime.getTime() + auraSpawnInterval
+      );
+      playSpawnSound();
+    }
+
+    // Check if despawned
+    if (currentTime > nextAuraDespawnTime) {
+      console.log(
+        currentTime +
+          " is passing despawn timer " +
+          nextAuraDespawnTime +
+          ". Updating to next interval..."
       );
       nextAuraDespawnTime = new Date(
-        nextAuraSpawnTime.getTime() + auraDespawnInterval
+        nextAuraDespawnTime.getTime() + auraDespawnInterval
       );
-
-      // Recursively call the function to check again
-      calculateAuraTimes();
-    } else {
-      // If no update is needed, display the aura times
-      displayAuraTimes(nextAuraSpawnTime, nextAuraDespawnTime);
     }
+
+    // Display the aura times after both checks
+    displayAuraTimes(nextAuraSpawnTime, nextAuraDespawnTime);
   }
 
   function displayAuraTimes(auraSpawnTime, auraDespawnTime) {
-    auraSellerOutput.innerHTML =
-      "Current Aura Spawn Time: " +
-      auraSpawnTime.toLocaleTimeString() +
-      "<br>Current Aura Despawn Time: " +
-      auraDespawnTime.toLocaleTimeString();
-  }
+    const auraSpawnTimeSpan = document.getElementById("aura-spawn-time");
+    const auraDespawnTimeSpan = document.getElementById("aura-despawn-time");
+    const auraTimerSpan = document.getElementById("aura-timer");
 
+    auraSpawnTimeSpan.textContent = auraSpawnTime.toLocaleTimeString();
+    auraDespawnTimeSpan.textContent = auraDespawnTime.toLocaleTimeString();
+
+    // Calculate and display Time until next spawn
+    const timeUntilNextSpawn = auraSpawnTime - currentTime;
+
+    const hoursUntilNextSpawn = Math.floor(
+      timeUntilNextSpawn / (60 * 60 * 1000)
+    );
+    const minutesUntilNextSpawn = Math.floor(
+      (timeUntilNextSpawn % (60 * 60 * 1000)) / (60 * 1000)
+    );
+    const secondsUntilNextSpawn = Math.floor(
+      (timeUntilNextSpawn % (60 * 1000)) / 1000
+    );
+
+    auraTimerSpan.textContent = `${hoursUntilNextSpawn}h ${minutesUntilNextSpawn}m ${secondsUntilNextSpawn}s`;
+  }
   // Calculate initial aura times
   calculateAuraTimes();
 
@@ -119,8 +176,6 @@ function auraSeller(serverStartTime) {
 }
 
 function fruitSpawn(serverStartTime) {
-  const fruitSpawnOutput = document.getElementById("fruit-spawn-output");
-
   function calculateFruitTimes() {
     const fruitSpawnInterval = 60 * 60 * 1000; // 60 Minutes
     const fruitDespawnInterval = 20 * 60 * 1000; // 20 Minutes
@@ -133,30 +188,38 @@ function fruitSpawn(serverStartTime) {
       nextFruitDespawnTime = new Date(
         nextFruitSpawnTime.getTime() + fruitDespawnInterval
       );
-    } else if (currentTime > nextFruitDespawnTime) {
+    }
+
+    // Check if spawned
+    if (currentTime > nextFruitSpawnTime) {
       console.log(
         currentTime +
-          " is passing " +
-          nextFruitDespawnTime +
+          " is passing spawn timer " +
+          nextFruitSpawnTime +
           ". Updating to next interval..."
       );
-      /*
-       * Unlike the aura seller, the timer for the following fruit begins when the previous one spawns,
-       * therefore we instead add an hour to the previous spawn time to get the new one.
-       */
       nextFruitSpawnTime = new Date(
         nextFruitSpawnTime.getTime() + fruitSpawnInterval
+      );
+
+      playSpawnSound();
+    }
+
+    // Check if despawned
+    if (currentTime > nextFruitDespawnTime) {
+      console.log(
+        currentTime +
+          " is passing despawn timer " +
+          nextFruitDespawnTime +
+          ". Updating to next interval..."
       );
       nextFruitDespawnTime = new Date(
         nextFruitSpawnTime.getTime() + fruitDespawnInterval
       );
-
-      // Recursively call the function to check again
-      calculateFruitTimes();
-    } else {
-      // If no update is needed, display the fruit times
-      displayFruitTimes(nextFruitSpawnTime, nextFruitDespawnTime);
     }
+
+    // Display the fruit times after both checks
+    displayFruitTimes(nextFruitSpawnTime, nextFruitDespawnTime);
   }
 
   function displayFruitTimes(fruitSpawnTime, fruitDespawnTime) {
@@ -165,12 +228,10 @@ function fruitSpawn(serverStartTime) {
     const fruitTimerSpan = document.getElementById("fruit-timer");
 
     // Display Next Fruit Spawn Time
-    fruitSpawnTimeSpan.textContent =
-      "Next Fruit Spawn: " + fruitSpawnTime.toLocaleTimeString();
+    fruitSpawnTimeSpan.textContent = fruitSpawnTime.toLocaleTimeString();
 
     // Display Next Fruit Despawn Time
-    fruitDespawnTimeSpan.textContent =
-      "Next Fruit Despawn: " + fruitDespawnTime.toLocaleTimeString();
+    fruitDespawnTimeSpan.textContent = fruitDespawnTime.toLocaleTimeString();
 
     // Calculate and display Time until next spawn
     const timeUntilNextSpawn = fruitSpawnTime - currentTime;
@@ -185,9 +246,7 @@ function fruitSpawn(serverStartTime) {
       (timeUntilNextSpawn % (60 * 1000)) / 1000
     );
 
-    fruitTimerSpan.textContent =
-      "Time until next spawn: " +
-      `${hoursUntilNextSpawn}h ${minutesUntilNextSpawn}m ${secondsUntilNextSpawn}s`;
+    fruitTimerSpan.textContent = `${hoursUntilNextSpawn}h ${minutesUntilNextSpawn}m ${secondsUntilNextSpawn}s`;
   }
 
   // Calculate initial fruit times
@@ -199,63 +258,123 @@ function fruitSpawn(serverStartTime) {
   }, 1000); // Update every second for real-time tracking
 }
 
-function coreEvent(serverStartTime) {
-  const coreEventOutput = document.getElementById("core-event-output");
+function eventFruit(serverStartTime) {
+  function calculateEventFruitTimes() {
+    const eventFruitSpawnInterval = 90 * 60 * 1000; // 90 Minutes
+    const eventFruitDespawnInterval = 5 * 60 * 1000; // 5 Minutes
 
-  function calculateCoreTimes() {
-    const coreSpawnInterval = 90 * 60 * 1000; // 90 Minutes
-    const coreDespawnInterval = 5 * 60 * 1000; // 5 Minutes
+    // Initialize event fruit times if not already set
+    if (!nextEventFruitDespawnTime) {
+      nextEventFruitSpawnTime = new Date(
+        serverStartTime.getTime() + eventFruitSpawnInterval
+      );
+      nextEventFruitDespawnTime = new Date(
+        nextEventFruitSpawnTime.getTime() + eventFruitDespawnInterval
+      );
+    }
 
-    // Initialize core times if not already set
-    if (!nextCoreDespawnTime) {
-      nextCoreSpawnTime = new Date(
-        serverStartTime.getTime() + coreSpawnInterval
-      );
-      nextCoreDespawnTime = new Date(
-        nextCoreSpawnTime.getTime() + coreDespawnInterval
-      );
-    } else if (currentTime > nextCoreDespawnTime) {
+    // Check if spawned
+    if (currentTime > nextEventFruitSpawnTime) {
       console.log(
         currentTime +
-          " is passing " +
-          nextCoreDespawnTime +
+          " is passing spawn timer " +
+          nextEventFruitSpawnTime +
           ". Updating to next interval..."
       );
-      /*
-       * Unlike the aura seller, the timer for the following core begins when the previous one spawns,
-       * therefore we instead add an hour to the previous spawn time to get the new one.
-       */
-      nextCoreSpawnTime = new Date(
-        nextCoreSpawnTime.getTime() + coreSpawnInterval
+      nextEventFruitSpawnTime = new Date(
+        nextEventFruitSpawnTime.getTime() + eventFruitSpawnInterval
       );
-      nextCoreDespawnTime = new Date(
-        nextCoreSpawnTime.getTime() + coreSpawnInterval
-      );
-
-      // Recursively call the function to check again
-      calculateCoreTimes();
-    } else {
-      // If no update is needed, display the core times
-      displayCoreTimes(nextCoreSpawnTime, nextCoreDespawnTime);
+      playSpawnSound();
     }
+
+    // Check if despawned
+    if (currentTime > nextEventFruitDespawnTime) {
+      console.log(
+        currentTime +
+          " is passing despawn timer " +
+          nextEventFruitDespawnTime +
+          ". Updating to next interval..."
+      );
+      nextEventFruitDespawnTime = new Date(
+        nextEventFruitSpawnTime.getTime() + eventFruitDespawnInterval
+      );
+    }
+
+    // Display the event fruit times after both checks
+    displayEventFruitTimes(nextEventFruitSpawnTime, nextEventFruitDespawnTime);
   }
 
-  function displayCoreTimes(coreSpawnTime, coreDespawnTime) {
-    coreEventOutput.innerHTML =
-      "Current Core Spawn Time: " +
-      coreSpawnTime.toLocaleTimeString() +
-      "<br>Current Core Despawn Time: " +
-      coreDespawnTime.toLocaleTimeString();
+  function displayEventFruitTimes(eventFruitSpawnTime, eventFruitDespawnTime) {
+    const eventFruitSpawnTimeSpan = document.getElementById("event-spawn-time");
+    const eventFruitDespawnTimeSpan =
+      document.getElementById("event-despawn-time");
+    const eventFruitTimerSpan = document.getElementById("event-timer");
+
+    // Display Next Fruit Spawn Time
+    eventFruitSpawnTimeSpan.textContent =
+      eventFruitSpawnTime.toLocaleTimeString();
+
+    // Display Next Fruit Despawn Time
+    eventFruitDespawnTimeSpan.textContent =
+      eventFruitDespawnTime.toLocaleTimeString();
+
+    // Calculate and display Time until next spawn
+    const timeUntilNextSpawn = eventFruitSpawnTime - currentTime;
+
+    const hoursUntilNextSpawn = Math.floor(
+      timeUntilNextSpawn / (60 * 60 * 1000)
+    );
+    const minutesUntilNextSpawn = Math.floor(
+      (timeUntilNextSpawn % (60 * 60 * 1000)) / (60 * 1000)
+    );
+    const secondsUntilNextSpawn = Math.floor(
+      (timeUntilNextSpawn % (60 * 1000)) / 1000
+    );
+
+    eventFruitTimerSpan.textContent = `${hoursUntilNextSpawn}h ${minutesUntilNextSpawn}m ${secondsUntilNextSpawn}s`;
   }
 
-  // Calculate initial core times
-  calculateCoreTimes();
+  // Calculate initial event fruit times
+  calculateEventFruitTimes();
 
-  // Set up an interval to recalculate core time every second
+  // Set up an interval to recalculate event fruit time every second
   setInterval(() => {
-    calculateCoreTimes();
+    calculateEventFruitTimes();
   }, 1000); // Update every second for real-time tracking
 }
+
+// Function to play the spawn sound
+function playSpawnSound() {
+  const spawnSound = new Audio("./audio/notification.mp3");
+  spawnSound.volume = document.getElementById("volumeControl").value;
+  spawnSound.play();
+}
+
+// Function to update the volume based on user input
+function updateVolume() {
+  const volumeControl = document.getElementById("volumeControl");
+
+  // Save the volume setting to localStorage
+  localStorage.setItem("volume", volumeControl.value);
+}
+
+function openSettings() {
+  const modal = document.getElementById("settingsModal");
+  const overlay = document.getElementById("overlay");
+
+  modal.style.display = "block";
+  overlay.style.display = "block";
+}
+
+function closeSettings() {
+  const modal = document.getElementById("settingsModal");
+  const overlay = document.getElementById("overlay");
+
+  modal.style.display = "none";
+  overlay.style.display = "none";
+}
+
+window.addEventListener("load", updateVolume);
 
 // Update the time every second
 setInterval(updateCurrentTime, 1000);
