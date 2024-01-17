@@ -61,6 +61,7 @@ div#server-start-time {
 
 .container.spawn {
   margin-bottom: 80px;
+  display: none;
 }
 
 .container.spawn h2 {
@@ -83,7 +84,11 @@ div#server-start-time {
   gap: 20px;
 }
 
-.timer-grid div {
+.timer-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
   border: 1px solid #fff;
   padding: 20px;
   text-align: center;
@@ -93,8 +98,16 @@ div#server-start-time {
   margin: 0;
 }
 
+.timer-grid .active {
+  color: rgb(100, 255, 100);
+}
+
+.timer-grid .inactive {
+  color: rgb(255, 45, 45);
+}
+
 /* Style for the first two items (top rows) */
-.timer-grid div:last-child {
+.timer-grid div:nth-last-of-type(-n + 2) {
   grid-column: span 2; /* Make them span both columns */
 }
 
