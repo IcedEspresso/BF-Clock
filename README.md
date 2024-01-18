@@ -5,4 +5,3 @@ TODO:
 - Better validation method, currently the alert can break the input field momentarily.
 - Better input fields, alongside the above.
 - Improved settings menu.
-- Incorporate the "seconds".

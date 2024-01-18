@@ -70,7 +70,7 @@
               type="text"
               name="modalTime"
               class="userInput"
-              placeholder="HH:mm"
+              placeholder="HH:mm:ss"
               oninput="syncInputs(this.value)"
               onkeydown="handleEnterKey(event)"
           /></label>
@@ -87,7 +87,7 @@
           type="text"
           name="mainTime"
           class="userInput"
-          placeholder="HH:mm"
+          placeholder="HH:mm:ss"
           oninput="syncInputs(this.value)"
           onkeydown="handleEnterKey(event)"
       /></label>
@@ -99,8 +99,24 @@
       <span
         >It's suggested to zoom out the page to view all timers at the same
         time.</span
+      ><br />
+      <span
+        >*Timers are an approximation and will become inaccurate over time due
+        to player involvement</span
       >
       <div id="server-start-time"></div>
+
+      <!-- Sea Selector Buttons -->
+      <div class="container spawn text-align-center">
+        <!-- <input type="radio" id="firstSea" name="seaType" />
+        <label for="firstSea">First Sea</label> -->
+
+        <input type="radio" id="secondSea" name="seaType" checked />
+        <label for="secondSea">Second Sea</label>
+
+        <input type="radio" id="thirdSea" name="seaType" />
+        <label for="thirdSea">Third Sea</label>
+      </div>
     </div>
 
     <!-- Fruit Spawn Alert -->
@@ -149,7 +165,7 @@
       </div>
     </div>
 
-    <!-- Event Fruit -->
+    <!-- Event  -->
     <div class="container spawn">
       <h2>Event Spawn</h2>
       <div id="event-spawn-output" class="timer-grid">
