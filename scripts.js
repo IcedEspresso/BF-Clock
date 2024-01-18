@@ -266,7 +266,7 @@ function eventSpawn() {
         nextEventSpawnTime.getTime() + nextEventDespawnInterval
       );
       nextEventSpawnTime = new Date(
-        nextEventDespawnTime.getTime() + nextEventSpawnInterval
+        nextEventSpawnTime.getTime() + nextEventSpawnInterval
       );
       hasChanged = true;
     }
