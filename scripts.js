@@ -163,10 +163,10 @@ function auraSpawn() {
 
   if (!auraFirstSpawn) {
     nextAuraSpawnInterval = 25 * 60 * 1000; // 25 Minutes;
-    nextAuraDespawnInterval = 20 * 60 * 1000; // 20 Minutes;
+    nextAuraDespawnInterval = 25 * 60 * 1000; // 20 Minutes;
   } else {
     nextAuraSpawnInterval = 5 * 60 * 1000; // 5 Minutes;
-    nextAuraDespawnInterval = 20 * 60 * 1000; // 20 Minutes;
+    nextAuraDespawnInterval = 25 * 60 * 1000; // 20 Minutes;
   }
 
   // If nextAuraSpawnTime is undefined or currentTime surpasses it
