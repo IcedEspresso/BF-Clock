@@ -1,5 +1,5 @@
 document.getElementById("volumeControl").value =
-  localStorage.getItem("volume") || 0.5;
+  localStorage.getItem("volume") || 0.1;
 
 let firstStart = false;
 let serverStart;
@@ -363,4 +363,36 @@ timeInterval = setInterval(updateCurrentTime, 1000);
 function resetInterval() {
   clearInterval(timeInterval);
   timeInterval = setInterval(updateCurrentTime, 1000);
+}
+
+/* Click Counter */
+
+function openCounter() {
+  const modal = document.getElementById("counter-modal");
+
+  modal.style.display = "block";
+}
+function closeCounter() {
+  const modal = document.getElementById("counter-modal");
+
+  modal.style.display = "none";
+}
+
+function modifyCount(action) {
+  let theCount = document.getElementById("theCount");
+  let theModified = parseInt(theCount.value);
+
+  switch (action) {
+    case "add": {
+      theCount.value = theModified += 1;
+      break;
+    }
+    case "subtract": {
+      theCount.value = theModified -= 1;
+      break;
+    }
+    default: {
+      throw new Error("modifyCount failed");
+    }
+  }
 }

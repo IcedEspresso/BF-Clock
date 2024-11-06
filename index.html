@@ -1,191 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BF Timer</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="scripts.js" defer></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BF Timer</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="scripts.js" defer></script>
+</head>
 
-  <body>
-    <header>
-      <img
-        src="./img/Panda-Lounge-1-6-2024.png"
-        alt="PL One Piece Stylized Logo"
-        class="logo"
-      />
+<body>
+  <header>
+    <img
+      src="./img/Panda-Lounge-1-6-2024.png"
+      alt="PL One Piece Stylized Logo"
+      class="logo"
+    />
 
-      <div class="container text-align-center">
-        <h1>Blox Fruits Calculator</h1>
-        <!-- <span id="current-time"></span> -->
-      </div>
-
-      <button onclick="openSettings()">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="icon icon-tabler icon-tabler-settings"
-          width="44"
-          height="44"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="#2c3e50"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path
-            d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
-          />
-          <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
-        </svg>
-      </button>
-    </header>
-
-    <!-- The Modal -->
-    <div id="overlay" onclick="closeSettings()"></div>
-    <div id="settingsModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeSettings()">&times;</span>
-        <h2>Settings</h2>
-        <h6>Version 2.3</h6>
-        <div>
-          <input
-            type="range"
-            id="volumeControl"
-            min="0"
-            max="1"
-            step="0.1"
-            value="0.5"
-            onchange="updateVolume()"
-          />
-          <button onclick="playSpawnSound()">Test Spawn Sound</button>
-        </div>
-
-        <div>
-          <label
-            >Enter 24-hour time:
-            <input
-              type="text"
-              name="modalTime"
-              class="userInput"
-              placeholder="HH:mm:ss"
-              oninput="syncInputs(this.value)"
-              onkeydown="handleEnterKey(event)"
-          /></label>
-
-          <button onclick="saveServerStart()">Calculate</button>
-        </div>
-      </div>
+    <div class="container text-align-center">
+      <h1>Blox Fruits Calculator</h1>
+      <!-- <span id="current-time"></span> -->
     </div>
 
-    <div class="container" id="mainInput">
-      <label
-        >Enter 24-hour time:
-        <input
-          type="text"
-          name="mainTime"
-          class="userInput"
-          placeholder="HH:mm:ss"
-          oninput="syncInputs(this.value)"
-          onkeydown="handleEnterKey(event)"
-      /></label>
-
-      <button onclick="saveServerStart()">Calculate</button>
-    </div>
-
-    <div class="container spawn text-align-center">
-      <span
-        >It's suggested to zoom out the page to view all timers at the same
-        time.</span
-      ><br />
-      <span
-        >*Timers are an approximation and will become inaccurate over time due
-        to player involvement</span
+    <button onclick="openSettings()">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="icon icon-tabler icon-tabler-settings"
+        width="44"
+        height="44"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="#2c3e50"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       >
-      <div id="server-start-time"></div>
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path
+          d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"
+        />
+        <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+      </svg>
+    </button>
+  </header>
 
-      <!-- Sea Selector Buttons -->
-      <div class="container spawn text-align-center">
-        <!-- <input type="radio" id="firstSea" name="seaType" />
-        <label for="firstSea">First Sea</label> -->
+  <!-- The Modal -->
+  <div id="overlay" onclick="closeSettings()"></div>
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeSettings()">&times;</span>
+      <h2>Settings</h2>
+      <h6>Version 2.4</h6>
+      <p>
+        <strong>Changelog:</strong> <br />
+        <ul>
+          <li>Added Click Counter</li>
+          <li>Added a Changelog</li>
+          <li>CSS Changes</li>
+        </ul>
+      </p>
+      <hr />
+      <div>
+        <input
+          type="range"
+          id="volumeControl"
+          min="0"
+          max="1"
+          step="0.05"
+          value="0.5"
+          onchange="updateVolume()"
+        />
+        <button onclick="playSpawnSound()">Test Spawn Sound</button>
+      </div>
 
-        <input type="radio" id="secondSea" name="seaType" checked />
-        <label for="secondSea">Second Sea</label>
+      <div>
+        <label
+          >Enter 24-hour time:
+          <input
+            type="text"
+            name="modalTime"
+            class="userInput"
+            placeholder="HH:mm:ss"
+            oninput="syncInputs(this.value)"
+            onkeydown="handleEnterKey(event)"
+        /></label>
 
-        <input type="radio" id="thirdSea" name="seaType" />
-        <label for="thirdSea">Third Sea</label>
+        <button onclick="saveServerStart()">Calculate</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="mainInput">
+    <label
+      >Enter 24-hour time:
+      <input
+        type="text"
+        name="mainTime"
+        class="userInput"
+        placeholder="HH:mm:ss"
+        oninput="syncInputs(this.value)"
+        onkeydown="handleEnterKey(event)"
+    /></label>
+
+    <button onclick="saveServerStart()">Calculate</button>
+  </div>
+
+  <div class="container spawn text-align-center">
+    <span
+      >It's suggested to zoom out the page to view all timers at the same
+      time.</span
+    ><br />
+    <span
+      >*Timers are an approximation and will become inaccurate over time due
+      to player involvement</span
+    >
+    <div id="server-start-time"></div>
+
+    <!-- Sea Selector Buttons -->
+    <div class="container spawn text-align-center">
+      <!-- <input type="radio" id="firstSea" name="seaType" />
+      <label for="firstSea">First Sea</label> -->
+
+      <input type="radio" id="secondSea" name="seaType" checked />
+      <label for="secondSea">Second Sea</label>
+
+      <input type="radio" id="thirdSea" name="seaType" />
+      <label for="thirdSea">Third Sea</label>
+    </div>
+  </div>
+
+  <!-- Fruit Spawn Alert -->
+  <div class="container spawn">
+    <h2>Fruit Spawn</h2>
+    <div id="fruit-spawn-output" class="timer-grid">
+      <div>
+        <h4>Next Fruit Spawn</h4>
+        <span id="fruit-spawn-time"></span>
+      </div>
+      <div>
+        <h4>Next Fruit Despawn</h4>
+        <span id="fruit-despawn-time"></span>
+      </div>
+      <div>
+        <h4>Time until next spawn</h4>
+        <span id="fruit-timer"></span>
+      </div>
+      <div>
+        <h4>Status</h4>
+        <div id="fruit-active"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aura Seller -->
+  <div class="container spawn">
+    <h2>Aura Spawn</h2>
+    <div id="aura-spawn-output" class="timer-grid">
+      <div>
+        <h4>Next Aura Spawn</h4>
+        <span id="aura-spawn-time"></span>
+      </div>
+      <div>
+        <h4>Next Aura Despawn</h4>
+        <span id="aura-despawn-time"></span>
+      </div>
+      <div>
+        <h4>Time until next spawn</h4>
+        <span id="aura-timer"></span>
+      </div>
+      <div>
+        <h4>Status</h4>
+        <div id="aura-active"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event  -->
+  <div class="container spawn">
+    <h2>Event Spawn</h2>
+    <div id="event-spawn-output" class="timer-grid">
+      <div>
+        <h4>Next Event Spawn</h4>
+        <span id="event-spawn-time"></span>
+      </div>
+      <div>
+        <h4>Next Event Despawn</h4>
+        <span id="event-despawn-time"></span>
+      </div>
+      <div>
+        <h4>Time until next spawn</h4>
+        <span id="event-timer"></span>
+      </div>
+      <div>
+        <h4>Status</h4>
+        <div id="event-active"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Click Counter -->
+    <div id="counter-modal" style="display: none;">
+    <span class="close" onclick="closeCounter()">&times;</span>
+    <div style="display: flex;">
+      <input type="number" value="0" id="theCount"></input></div>
+      <div class="count-buttons">
+        <button onclick="modifyCount('add')"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg></button>
+        <button onclick="modifyCount('subtract')"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-minus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /></svg></button>
       </div>
     </div>
 
-    <!-- Fruit Spawn Alert -->
-    <div class="container spawn">
-      <h2>Fruit Spawn</h2>
-      <div id="fruit-spawn-output" class="timer-grid">
-        <div>
-          <h4>Next Fruit Spawn</h4>
-          <span id="fruit-spawn-time"></span>
-        </div>
-        <div>
-          <h4>Next Fruit Despawn</h4>
-          <span id="fruit-despawn-time"></span>
-        </div>
-        <div>
-          <h4>Time until next spawn</h4>
-          <span id="fruit-timer"></span>
-        </div>
-        <div>
-          <h4>Status</h4>
-          <div id="fruit-active"></div>
-        </div>
-      </div>
+    <button id="counter-open" onclick="openCounter()">
+      <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-plus-minus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7h6" /><path d="M7 4v6" /><path d="M20 18h-6" /><path d="M5 19l14 -14" /></svg></button>
     </div>
-
-    <!-- Aura Seller -->
-    <div class="container spawn">
-      <h2>Aura Spawn</h2>
-      <div id="aura-spawn-output" class="timer-grid">
-        <div>
-          <h4>Next Aura Spawn</h4>
-          <span id="aura-spawn-time"></span>
-        </div>
-        <div>
-          <h4>Next Aura Despawn</h4>
-          <span id="aura-despawn-time"></span>
-        </div>
-        <div>
-          <h4>Time until next spawn</h4>
-          <span id="aura-timer"></span>
-        </div>
-        <div>
-          <h4>Status</h4>
-          <div id="aura-active"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Event  -->
-    <div class="container spawn">
-      <h2>Event Spawn</h2>
-      <div id="event-spawn-output" class="timer-grid">
-        <div>
-          <h4>Next Event Spawn</h4>
-          <span id="event-spawn-time"></span>
-        </div>
-        <div>
-          <h4>Next Event Despawn</h4>
-          <span id="event-despawn-time"></span>
-        </div>
-        <div>
-          <h4>Time until next spawn</h4>
-          <span id="event-timer"></span>
-        </div>
-        <div>
-          <h4>Status</h4>
-          <div id="event-active"></div>
-        </div>
-      </div>
-    </div>
-  </body>
+</body>
 </html>
